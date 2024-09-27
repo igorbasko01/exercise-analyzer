@@ -1,9 +1,9 @@
 from openpyxl import load_workbook
 
-from data_handler import extract_exercise_names
+from data_handler import extract_exercise_names, explode_exercises
 
 original_exercise_names = ['Chest', 'Squat', 'Row', 'Biceps W', 'Pullups']
-new_exercise_names = ['Bench Press', 'Leg Press', 'Bent Over Row', 'Barbell Curl', 'Pullups']
+new_exercise_names = ['Bench Press', 'Squat', 'Bent Over Row', 'EZ Barbell Curl', 'Pullups']
 
 wb = load_workbook('Exercise.xlsx', data_only=False)
 
@@ -16,11 +16,25 @@ first_row = list(map(lambda x: x.value, list(next(ws.iter_rows(min_row=1, max_ro
 exercise_names = extract_exercise_names(first_row, original_exercise_names)
 print('Exercise names:', exercise_names)
 
-for row in ws.iter_rows():
+if not exercise_names:
+    print('No exercise names found')
+    exit()
+
+original_headers = ['Date'] + exercise_names
+
+whole_data = []
+for row in ws.iter_rows(min_row=2):
     row_data = []
     for cell in row:
         if cell.value is not None:
             row_data.append(cell.value)
         else:
             row_data.append(None)
-    print(row_data)
+    whole_data.append(row_data)
+
+print('Whole data:', whole_data)
+
+new_headers = ['Date', 'Exercise', 'Weight', 'Reps']
+exploded = explode_exercises(whole_data, original_headers, lambda x: x, lambda x: '3', new_exercise_names)
+
+print('Exploded:', [new_headers] + list(exploded))
