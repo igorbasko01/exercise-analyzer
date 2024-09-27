@@ -58,6 +58,35 @@ class DataHandlerTests(unittest.TestCase):
         expected_rows = []
         self.assertEqual(list(actual_rows), expected_rows)
 
+    def test_explode_exercises_explode_sets(self):
+        def sample_weights_extractor(formula: str) -> str:
+            return formula
+
+        def sample_reps_extractor(formula: str) -> List[str]:
+            return ['3', '4', '5']
+
+        header_row = ['Date', 'Chest', 'Squat', 'Row', 'Biceps W', 'Pullups']
+        alternative_exercise_names = ['Bench Press', 'Leg Press', 'Bent Over Row', 'Barbell Curl', 'Pullups']
+        input_rows = [[datetime.datetime(2023, 10, 25), 'weights1', 'weights2', 'weights3', 'weights4', 'weights5']]
+        actual_rows = explode_exercises(input_rows, header_row, sample_weights_extractor, sample_reps_extractor,
+                                        alternative_exercise_names)
+        expected_rows = [['2023-10-25', 'Bench Press', 'weights1', '3'],
+                         ['2023-10-25', 'Bench Press', 'weights1', '4'],
+                         ['2023-10-25', 'Bench Press', 'weights1', '5'],
+                         ['2023-10-25', 'Leg Press', 'weights2', '3'],
+                         ['2023-10-25', 'Leg Press', 'weights2', '4'],
+                         ['2023-10-25', 'Leg Press', 'weights2', '5'],
+                         ['2023-10-25', 'Bent Over Row', 'weights3', '3'],
+                         ['2023-10-25', 'Bent Over Row', 'weights3', '4'],
+                         ['2023-10-25', 'Bent Over Row', 'weights3', '5'],
+                         ['2023-10-25', 'Barbell Curl', 'weights4', '3'],
+                         ['2023-10-25', 'Barbell Curl', 'weights4', '4'],
+                         ['2023-10-25', 'Barbell Curl', 'weights4', '5'],
+                         ['2023-10-25', 'Pullups', 'weights5', '3'],
+                         ['2023-10-25', 'Pullups', 'weights5', '4'],
+                         ['2023-10-25', 'Pullups', 'weights5', '5']]
+        self.assertEqual(list(actual_rows), expected_rows)
+
     def test_extract_weights_from_formula(self):
         formula = '=(40+8)*6*3'
         weights = extract_weights_from_formula(formula)

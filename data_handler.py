@@ -55,4 +55,5 @@ def explode_exercises(input_rows: List[List[str | datetime]],
         for i, exercise in enumerate(header_row[1:]):
             weights = weights_extractor(row[i + 1])
             sets = sets_reps_extractor(row[i + 1])
-            yield [date, alternative_exercise_names[i], weights, sets[0]]
+            for reps in sets:
+                yield [date, alternative_exercise_names[i], weights, reps]

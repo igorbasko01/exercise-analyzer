@@ -39,3 +39,4 @@ exploded = explode_exercises(whole_data,
 
 new_headers = ['Date', 'Exercise', 'Weight', 'Reps']
 print('Exploded:', [new_headers] + list(exploded))
+
