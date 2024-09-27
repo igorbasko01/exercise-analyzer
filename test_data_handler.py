@@ -1,7 +1,7 @@
 import datetime
 import unittest
 
-from data_handler import extract_exercise_names, explode_exercises
+from data_handler import extract_exercise_names, explode_exercises, extract_weights_from_formula
 
 
 class DataHandlerTests(unittest.TestCase):
@@ -55,3 +55,33 @@ class DataHandlerTests(unittest.TestCase):
                                         alternative_exercise_names)
         expected_rows = []
         self.assertEqual(list(actual_rows), expected_rows)
+
+    def test_extract_weights_from_formula(self):
+        formula = '=(40+8)*6*3'
+        weights = extract_weights_from_formula(formula)
+        expected_weights = '40+8'
+        self.assertEqual(weights, expected_weights)
+
+    def test_extract_weights_from_formula_no_parentheses(self):
+        formula = '=60*3*9'
+        weights = extract_weights_from_formula(formula)
+        expected_weights = '60'
+        self.assertEqual(weights, expected_weights)
+
+    def test_extract_weights_from_formula_negative(self):
+        formula = '=(90-28)*3*9'
+        weights = extract_weights_from_formula(formula)
+        expected_weights = '90-28'
+        self.assertEqual(weights, expected_weights)
+
+    def test_extract_weights_from_formula_no_operator(self):
+        formula = '=90'
+        weights = extract_weights_from_formula(formula)
+        expected_weights = '90'
+        self.assertEqual(weights, expected_weights)
+
+    def test_extract_weights_from_formula_when_none(self):
+        formula = None
+        weights = extract_weights_from_formula(formula)
+        expected_weights = ''
+        self.assertEqual(weights, expected_weights)

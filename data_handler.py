@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Callable
+from typing import List, Callable, Optional
 
 
 def extract_exercise_names(row: List[str], allowed_exercises=None) -> List[str]:
@@ -15,11 +15,20 @@ def extract_exercise_names(row: List[str], allowed_exercises=None) -> List[str]:
     return exercise_names
 
 
+def extract_weights_from_formula(formula: Optional[str]) -> str:
+    if not formula:
+        return ''
+    return formula.split('*')[0].replace('=', '').replace('(', '').replace(')', '')
+
+
 def explode_exercises(input_rows: List[List[str | datetime]],
                       header_row: List[str],
-                      weights_extractor: Callable[[str], str],
-                      reps_extractor: Callable[[str], str],
-                      alternative_exercise_names: List[str]) -> List[List[str]]:
+                      weights_extractor: Callable[[str], str] = extract_weights_from_formula,
+                      reps_extractor: Callable[[str], str] = lambda x: '10',
+                      alternative_exercise_names: List[str] = None) -> List[List[str]]:
+
+    alternative_exercise_names = alternative_exercise_names or ['Bench Press', 'Squat', 'Bent Over Row',
+                                                                'EZ Barbell Curl', 'Pullups']
     for row in input_rows:
         if not row[0] or not isinstance(row[0], datetime):
             continue

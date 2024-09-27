@@ -12,7 +12,6 @@ ws = wb['Combined']
 # Extract the first row, converts tuple to list, the next is used to actually extract the row from the generator.
 first_row = list(map(lambda x: x.value, list(next(ws.iter_rows(min_row=1, max_row=1)))))
 
-
 exercise_names = extract_exercise_names(first_row, original_exercise_names)
 print('Exercise names:', exercise_names)
 
@@ -34,7 +33,10 @@ for row in ws.iter_rows(min_row=2):
 
 print('Whole data:', whole_data)
 
-new_headers = ['Date', 'Exercise', 'Weight', 'Reps']
-exploded = explode_exercises(whole_data, original_headers, lambda x: x, lambda x: '3', new_exercise_names)
+exploded = explode_exercises(whole_data,
+                             original_headers,
+                             reps_extractor=lambda x: '3',
+                             alternative_exercise_names=new_exercise_names)
 
+new_headers = ['Date', 'Exercise', 'Weight', 'Reps']
 print('Exploded:', [new_headers] + list(exploded))
