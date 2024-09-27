@@ -1,7 +1,9 @@
 import datetime
 import unittest
+from typing import List
 
-from data_handler import extract_exercise_names, explode_exercises, extract_weights_from_formula
+from data_handler import extract_exercise_names, explode_exercises, extract_weights_from_formula, \
+    extract_sets_and_reps_from_formula
 
 
 class DataHandlerTests(unittest.TestCase):
@@ -26,8 +28,8 @@ class DataHandlerTests(unittest.TestCase):
         def sample_weights_extractor(formula: str) -> str:
             return formula
 
-        def sample_reps_extractor(formula: str) -> str:
-            return '3'
+        def sample_reps_extractor(formula: str) -> List[str]:
+            return ['3']
 
         header_row = ['Date', 'Chest', 'Squat', 'Row', 'Biceps W', 'Pullups']
         alternative_exercise_names = ['Bench Press', 'Leg Press', 'Bent Over Row', 'Barbell Curl', 'Pullups']
@@ -45,8 +47,8 @@ class DataHandlerTests(unittest.TestCase):
         def sample_weights_extractor(formula: str) -> str:
             return formula
 
-        def sample_reps_extractor(formula: str) -> str:
-            return '3'
+        def sample_reps_extractor(formula: str) -> List[str]:
+            return ['3']
 
         header_row = ['Date', 'Chest', 'Squat', 'Row', 'Biceps W', 'Pullups']
         alternative_exercise_names = ['Bench Press', 'Leg Press', 'Bent Over Row', 'Barbell Curl', 'Pullups']
@@ -85,3 +87,22 @@ class DataHandlerTests(unittest.TestCase):
         weights = extract_weights_from_formula(formula)
         expected_weights = ''
         self.assertEqual(weights, expected_weights)
+
+    def test_extract_sets_and_reps_from_formula_reps_first(self):
+        formula = '=(40+8)*6*3'
+        sets = extract_sets_and_reps_from_formula(formula)
+        expected_sets = ['6', '6', '6']
+        self.assertEqual(sets, expected_sets)
+
+    def test_extract_sets_and_reps_from_formula_sets_first(self):
+        formula = '=(90-28)*3*9'
+        sets = extract_sets_and_reps_from_formula(formula)
+        expected_sets = ['9', '9', '9']
+        self.assertEqual(sets, expected_sets)
+
+    def test_extract_sets_and_reps_from_formula_parentheses(self):
+        formula = '=(90-28)*(10+10+6)'
+        sets = extract_sets_and_reps_from_formula(formula)
+        expected_sets = ['10', '10', '6']
+        self.assertEqual(expected_sets, sets)
+

@@ -35,7 +35,6 @@ print('Whole data:', whole_data)
 
 exploded = explode_exercises(whole_data,
                              original_headers,
-                             reps_extractor=lambda x: '3',
                              alternative_exercise_names=new_exercise_names)
 
 new_headers = ['Date', 'Exercise', 'Weight', 'Reps']
