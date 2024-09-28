@@ -39,7 +39,7 @@ exploded = explode_exercises(whole_data,
                              original_headers,
                              alternative_exercise_names=new_exercise_names)
 
-new_headers = ['Date', 'Exercise', 'Weight', 'Reps']
+new_headers = ['Date', 'Exercise', 'Weight Plates', 'Weight Equipment', 'Reps']
 exploded_with_headers = [new_headers] + list(exploded)
 print('Exploded:', exploded_with_headers)
 

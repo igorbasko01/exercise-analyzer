@@ -15,10 +15,19 @@ def extract_exercise_names(row: List[str], allowed_exercises=None) -> List[str]:
     return exercise_names
 
 
-def extract_weights_from_formula(formula: Optional[str]) -> str:
+def extract_weights_from_formula(formula: Optional[str]) -> Tuple[str, str]:
     if not formula:
-        return ''
-    return formula.split('*')[0].replace('=', '').replace('(', '').replace(')', '')
+        return '0', '0'
+    weights_formula = formula.split('*')[0].replace('=', '').replace('(', '').replace(')', '')
+    if '+' in weights_formula:
+        plates, equipment = weights_formula.split('+')
+        return plates, equipment
+    elif '-' in weights_formula:
+        _, plates = weights_formula.split('-')
+        # The minus sign is removed in split, we just need to add it back
+        return '-' + plates, '0'
+    else:
+        return weights_formula, '0'
 
 
 def extract_sets_and_reps_from_formula(formula: Optional[str]) -> List[str]:
@@ -42,10 +51,9 @@ def _extract_specific_reps(formula: str) -> List[str]:
 
 def explode_exercises(input_rows: List[List[str | datetime]],
                       header_row: List[str],
-                      weights_extractor: Callable[[str], str] = extract_weights_from_formula,
+                      weights_extractor: Callable[[str], Tuple[str, str]] = extract_weights_from_formula,
                       sets_reps_extractor: Callable[[str], List[str]] = extract_sets_and_reps_from_formula,
                       alternative_exercise_names: List[str] = None) -> List[List[str]]:
-
     alternative_exercise_names = alternative_exercise_names or ['Bench Press', 'Squat', 'Bent Over Row',
                                                                 'EZ Barbell Curl', 'Pullups']
     for row in input_rows:
@@ -53,7 +61,7 @@ def explode_exercises(input_rows: List[List[str | datetime]],
             continue
         date = row[0].strftime('%Y-%m-%d')
         for i, exercise in enumerate(header_row[1:]):
-            weights = weights_extractor(row[i + 1])
+            weights_plates, weights_equipment = weights_extractor(row[i + 1])
             sets = sets_reps_extractor(row[i + 1])
             for reps in sets:
-                yield [date, alternative_exercise_names[i], weights, reps]
+                yield [date, alternative_exercise_names[i], weights_plates, weights_equipment, reps]
