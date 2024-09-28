@@ -1,3 +1,5 @@
+import csv
+
 from openpyxl import load_workbook
 
 from data_handler import extract_exercise_names, explode_exercises
@@ -38,5 +40,9 @@ exploded = explode_exercises(whole_data,
                              alternative_exercise_names=new_exercise_names)
 
 new_headers = ['Date', 'Exercise', 'Weight', 'Reps']
-print('Exploded:', [new_headers] + list(exploded))
+exploded_with_headers = [new_headers] + list(exploded)
+print('Exploded:', exploded_with_headers)
 
+with open('output.csv', 'w') as f:
+    writer = csv.writer(f)
+    writer.writerows(exploded_with_headers)
